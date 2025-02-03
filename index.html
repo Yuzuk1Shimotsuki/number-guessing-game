@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PyScript Number Guessing Game</title>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.2/core.css">
+    <script type="module" src="https://pyscript.net/releases/2023.11.2/core.js"></script>
+</head>
+<body>
+    <div id="game-container" style="margin: 20px; padding: 15px; border: 1px solid #ccc;">
+        <h1>Number Guessing Game</h1>
+        <p>I'm thinking of a number between 1 and 100!</p>
+        <input type="number" id="guess-input" placeholder="Enter your guess (1-100)">
+        <button id="guess-button">Submit Guess</button>
+        <div id="message" style="margin-top: 10px; color: #333;"></div>
+    </div>
+
+<py-script>
+from pyscript import when
+import random
+from js import document, console
+
+secret_number = random.randint(1, 100)
+attempts = 0
+
+@when("click", selector="#guess-button")
+def check_guess(event=None):
+    global attempts
+    guess_input = document.getElementById("guess-input")
+    message_div = document.getElementById("message")
+    button = document.getElementById("guess-button")
+    
+    try:
+        guess = int(guess_input.value)
+        if guess < 1 or guess > 100:
+            message_div.innerText = "Please enter a number between 1 and 100."
+            return
+        
+        attempts += 1
+
+        if guess == secret_number:
+            message_div.innerHTML = f"🎉 Congratulations! You guessed it in {attempts} attempts!"
+            guess_input.disabled = True
+            button.disabled = True
+        elif guess < secret_number:
+            message_div.innerText = "Too low! Try again."
+        else:
+            message_div.innerText = "Too high! Try again."
+            
+        guess_input.value = ""
+        
+    except ValueError:
+        message_div.innerText = "Please enter a valid number."
+    except Exception as e:
+        console.error(f"Error: {str(e)}")
+
+@when("keypress", selector="#guess-input")
+def handle_enter(event):
+    if event.key == "Enter":
+        check_guess()
+</py-script>
+</body>
+</html>
